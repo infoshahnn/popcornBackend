@@ -1,0 +1,163 @@
+============================================================
+FINAL RESPONSE FORMAT — STRICT JSON
+============================================================
+
+The final response MUST be returned as valid JSON.
+
+Do NOT return Markdown.
+
+Do NOT return code fences.
+
+Do NOT add any text before or after the JSON.
+
+The JSON MUST contain EXACTLY these five variables:
+
+{
+  "transcript": "...",
+  "analysis": {
+    "callSummary": "...",
+    "salesTeamWork": "...",
+    "customerWork": "...",
+    "customerQueryResolution": "..."
+  }
+}
+
+VARIABLE DEFINITIONS:
+
+1. "transcription"
+
+This variable must contain the COMPLETE verified verbatim transcription exactly according to all transcription rules above.
+
+Include:
+
+- Speaker labels
+- Timestamps
+- Exact spoken words
+- Repetitions
+- Fillers
+- Pauses
+- False starts
+- Self-corrections
+- Incomplete sentences
+- Interruptions
+- [UNCLEAR] markers where required
+- [UNCLEAR NUMBER] markers where required
+- [UNCLEAR NAME] markers where required
+- [UNCLEAR LOCATION] markers where required
+- [UNCLEAR PRODUCT] markers where required
+- [OVERLAPPING SPEECH] markers where required
+
+Do NOT summarize or modify the transcription.
+
+2. "call_summary"
+
+This variable must contain ONLY the factual CALL SUMMARY generated according to the CALL SUMMARY rules above.
+
+Do NOT add assumptions.
+
+Do NOT add information that is not supported by the verified transcript.
+
+3. "sales_team_work"
+
+This variable must contain ONLY:
+
+SALES TEAM — WHAT WORK NEEDS TO BE DONE
+
+Use only explicitly assigned, requested, promised, or committed work.
+
+Do NOT invent tasks or deadlines.
+
+If no work was explicitly assigned:
+
+"None explicitly assigned in the call."
+
+4. "customer_work"
+
+This variable must contain ONLY:
+
+CUSTOMER — WHAT WORK NEEDS TO BE DONE
+
+Use only tasks explicitly agreed to, requested, or committed by the customer.
+
+Do NOT assume any customer action.
+
+Do NOT invent deadlines.
+
+If no customer task was explicitly assigned:
+
+"None explicitly assigned in the call."
+
+5. "customer_query_resolution"
+
+This variable must contain ONLY:
+
+CUSTOMER QUERY & WHETHER OUR TEAM SOLVED IT
+
+For every actual customer query, use:
+
+Customer Query:
+Our Team's Response:
+Status:
+Solved / Partially Solved / Not Solved / Not Clearly Determinable
+Evidence:
+
+Only use information directly supported by the verified transcript.
+
+Never invent the team's response.
+
+Never assume a query was solved.
+
+If resolution cannot be established:
+
+"Not Clearly Determinable."
+
+============================================================
+STRICT JSON RULES
+============================================================
+
+The response MUST be valid JSON.
+
+Use double quotes for all JSON keys and string values.
+
+Any line breaks inside the values MUST be represented using "\n".
+
+Do NOT use unescaped double quotes inside a JSON string.
+
+Do NOT add comments.
+
+Do NOT add additional variables.
+
+Do NOT rename any variable.
+
+Do NOT create nested variables.
+
+Do NOT add arrays unless absolutely required for preserving multiple items inside a string.
+
+Keep all five values as STRING values.
+
+The final response must contain EXACTLY these five top-level variables:
+
+"transcription"
+
+"call_summary"
+
+"sales_team_work"
+
+"customer_work"
+
+"customer_query_resolution"
+
+FINAL OUTPUT MUST LOOK LIKE:
+
+{
+  "transcript": "[00:00]\nSales Executive: Haan sir...\n[00:30]\nCustomer: Ji sir...",
+  "analysis": {
+    "callSummary": "Call's' factual summary...",
+    "salesTeamWork": "Task: ...\nWho: ...\nDeadline: ...\nStatus: ...",
+    "customerWork": "Task: ...\nDeadline: ...\nStatus: ...",
+    "customerQueryResolution": "Customer Query: ...\nOur Team's Response: ...\nStatus: 
+    Solved\nEvidence: ..."
+  }
+}
+
+No text outside this JSON object.

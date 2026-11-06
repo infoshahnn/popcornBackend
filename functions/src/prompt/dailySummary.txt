@@ -1,0 +1,93 @@
+============================================================
+SECTION 1: DAILY DATA INPUT — REQUIRED
+============================================================
+
+Before generating the End-of-Day report, the backend/Cron job must provide all available call records for the specified reporting date.
+
+The input data must contain the following information whenever available:
+
+- Reporting date.
+- Salesperson name or ID.
+- Call ID.
+- Call date and time.
+- Customer name or customer ID.
+- Individual call summary.
+- Sales-team tasks identified from the call.
+- Customer tasks identified from the call.
+- Customer complaints identified from the call.
+- Task and complaint status, if available.
+- Transcript or original call analysis, if available.
+
+The backend must fetch the records from Firebase before sending them to this prompt.
+
+The prompt must analyze the records it actually receives. It must never assume that it can access Firebase directly.
+
+============================================================
+SECTION 2: DAILY DATA PASSING FORMAT
+============================================================
+
+The backend/Cron job should pass the data to this prompt in the following logical structure:
+
+RECORDING DATE, CONTACT NAME, RECORDING ANALYSIS DATA, CONTACT PHONE in JSON stringify format
+
+INPUT DATA:
+{{callSummary}}
+
+
+IMPORTANT:
+
+1. Pass all available records for the reporting date, not just the latest call.
+2. Include multiple records even when the same customer was contacted more than once.
+3. Preserve unique call IDs so duplicate calls can be identified.
+4. Filter records by the correct reporting date and salesperson before generating the report.
+5. If the report is salesperson-specific, do not mix records from different salespeople.
+6. If the report is company-wide, include all relevant salespeople and preserve salesperson identification where available.
+7. If no records are found, pass an empty record set and report that no usable call records were provided.
+8. Do not create fictional records to fill missing data.
+
+============================================================
+SECTION 3: CRON AND FIREBASE DATA RETRIEVAL RULES
+============================================================
+
+The backend/Cron job is responsible for retrieving the daily call data from Firebase and passing it to the analysis prompt.
+
+The required workflow is:
+
+STEP 1: Determine the reporting date using the configured business timezone.
+
+STEP 2: Retrieve all relevant call records from Firebase for that reporting date.
+
+STEP 3: Apply the required salesperson filter, if the report is salesperson-specific.
+
+STEP 4: Retrieve the individual call summaries, tasks, customer actions, complaints, and statuses associated with those records.
+
+STEP 5: Ensure that all relevant records have been retrieved, including records spread across multiple query pages or batches, if applicable.
+
+STEP 6: Assemble the retrieved records into the DAILY CALL RECORDS input section described above.
+
+STEP 7: Pass the complete assembled input to the End-of-Day analysis prompt.
+
+STEP 8: Generate the report using exactly these four output keys:
+
+{
+  "summary": "...",
+  "salesTeamToDo": "...",
+  "customerToDo": "...",
+  "customerComplaint": "..."
+}
+
+STEP 9: Validate the response as JSON and store or display the report using the application's existing backend workflow.
+
+IMPORTANT TECHNICAL RULES:
+
+- The prompt itself does not retrieve Firebase data.
+- The backend must perform the Firebase queries.
+- The backend must pass the actual retrieved records to the model.
+- Do not assume that a collection, document path, field name, or database schema exists unless it has been verified in the application.
+- Use the actual Firebase collection and field names configured in the SNN Popcorn application.
+- Do not generate a final daily report from a single call when multiple daily records are available.
+- Do not silently truncate records because of model input limits. If batching is required, aggregate all batches before generating the final daily report, ensuring that duplicate tasks and complaints are consolidated correctly.
+
+============================================================
+END OF DAILY DATA INPUT AND PASSING SECTION
+============================================================
